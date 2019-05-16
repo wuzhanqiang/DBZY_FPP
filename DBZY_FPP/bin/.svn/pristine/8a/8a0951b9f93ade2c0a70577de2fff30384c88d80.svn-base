@@ -1,0 +1,89 @@
+package com.dbzy.zjxs.cfba;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.actionsoft.bpms.bo.engine.BO;
+import com.actionsoft.bpms.bpmn.engine.core.delegate.ProcessExecutionContext;
+import com.actionsoft.bpms.bpmn.engine.listener.InterruptListener;
+import com.actionsoft.bpms.bpmn.engine.listener.InterruptListenerInterface;
+import com.actionsoft.bpms.bpmn.engine.model.run.delegate.ProcessInstance;
+import com.actionsoft.bpms.util.DBSql;
+import com.actionsoft.exception.BPMNError;
+import com.actionsoft.sdk.local.SDK;
+import com.actionsoft.sdk.local.api.BOAPI;
+import com.dbzy.zjxs.po.OtczcbaPO;
+
+public class Otctszcba extends InterruptListener implements InterruptListenerInterface {
+
+	@Override
+	public boolean execute(ProcessExecutionContext ctx) throws Exception {
+		ProcessInstance proIns = ctx.getProcessInstance();
+		String proInsId = proIns.getId();
+		BOAPI boapi = SDK.getBOAPI();
+		//当前流程子表BO集合
+		List<BO> datas = boapi.query("BO_DY_DSJ_TSZC_S").addQuery("BINDID = ", proInsId).list();		
+		//标准品规表BO集合
+		//List<BO> bzpgList = boapi.query("BO_DY_BZPG_JCSJ").list();
+		
+		List<OtczcbaPO> otcList = new ArrayList<>();		
+		if(datas != null && !datas.isEmpty()) {
+			for(BO data : datas) {
+				OtczcbaPO op = new OtczcbaPO();
+				String bzpg = data.getString("ZCBZPG");				
+				op.setBzpg(bzpg);				
+				otcList.add(op);				
+			}
+		}
+		//标准品规集合
+//		List<String> blist = new ArrayList<>();
+//		if(bzpgList != null && !bzpgList.isEmpty()) {
+//			for(BO data : bzpgList) {				
+//				String bzpg = data.getString("BZPG");				
+//				blist.add(bzpg);				
+//			}
+//		}				
+//		StringBuffer errZCBZPG = new StringBuffer();
+//		boolean flag = true;
+//		for(OtczcbaPO op : otcList) {
+//			for(String s : blist) {
+//				if (op.getBzpg().equals(s)) {
+//					flag = false;					
+//				}				
+//			}
+//			if(flag) {
+//				errZCBZPG.append(op.getBzpg());
+//				errZCBZPG.append(",");
+//			}
+//		}
+		String sql = null;
+		int cnt = 0;
+		Connection conn = null;
+		//标准品规校验
+		StringBuffer errBZPG = new StringBuffer();
+		try {
+			conn = DBSql.open();
+			
+			for(OtczcbaPO po : otcList) {
+				sql = "select count(bzpg) cnt from BO_DY_KC_BZPG_S where bzpg ='"
+						+ po.getBzpg() + "'";
+				cnt = DBSql.getInt(conn,sql, "cnt");
+				if (cnt == 0) {
+					errBZPG.append(po.getBzpg());
+					errBZPG.append(",");
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			DBSql.close(conn);
+		}
+		if (errBZPG.toString().length() > 0) {
+			throw new BPMNError("ERR_ZCBZPG","请按照公司要求填写标准品规，问题标准品规为：" + errBZPG.toString());			
+		}
+
+		return true;
+	}
+
+}

@@ -1,0 +1,35 @@
+package com.dbzy.zjxs.po;
+
+public class KhbaPO {
+	private String sq;
+	private String khbzmc;
+	private String bzpg;
+	private String khjb;
+	private String dls;
+	public String getSq() {
+		return sq;
+	}
+	public void setSq(String sq) {
+		this.sq = sq;
+	}
+	public String getKhbzmc() {
+		return khbzmc;
+	}
+	public void setKhbzmc(String khbzmc) {
+		this.khbzmc = khbzmc;
+	}
+	public String getBzpg() {
+		return bzpg;
+	}
+	public void setBzpg(String bzpg) {
+		this.bzpg = bzpg;
+	}
+	
+	public String getKhjb() {
+		return khjb;
+	}
+	public void setKhjb(String khjb) {
+		this.khjb = khjb;
+	}
+	
+}

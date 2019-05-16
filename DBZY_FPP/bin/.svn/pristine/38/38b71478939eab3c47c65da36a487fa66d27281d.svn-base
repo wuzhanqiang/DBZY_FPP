@@ -1,0 +1,61 @@
+package com.dbzy.zjxs.po;
+
+public class LnzdbaPO {
+	private String ywy;
+	private String khmc;
+	private String bzpg;
+	private String khlx;
+	private String fzdls;
+	private String jhqd1;
+	private String jhqd2;
+	private String jhqd3;
+	public String getYwy() {
+		return ywy;
+	}
+	public void setYwy(String ywy) {
+		this.ywy = ywy;
+	}
+	public String getKhmc() {
+		return khmc;
+	}
+	public void setKhmc(String khmc) {
+		this.khmc = khmc;
+	}
+	public String getBzpg() {
+		return bzpg;
+	}
+	public void setBzpg(String bzpg) {
+		this.bzpg = bzpg;
+	}
+	public String getKhlx() {
+		return khlx;
+	}
+	public void setKhlx(String khlx) {
+		this.khlx = khlx;
+	}
+	public String getFzdls() {
+		return fzdls;
+	}
+	public void setFzdls(String fzdls) {
+		this.fzdls = fzdls;
+	}
+	public String getJhqd1() {
+		return jhqd1;
+	}
+	public void setJhqd1(String jhqd1) {
+		this.jhqd1 = jhqd1;
+	}
+	public String getJhqd2() {
+		return jhqd2;
+	}
+	public void setJhqd2(String jhqd2) {
+		this.jhqd2 = jhqd2;
+	}
+	public String getJhqd3() {
+		return jhqd3;
+	}
+	public void setJhqd3(String jhqd3) {
+		this.jhqd3 = jhqd3;
+	}
+	
+}

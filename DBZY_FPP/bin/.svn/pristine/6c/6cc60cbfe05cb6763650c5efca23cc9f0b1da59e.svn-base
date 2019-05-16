@@ -1,0 +1,71 @@
+package com.dbzy.zjxs.cfba;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.actionsoft.bpms.bo.engine.BO;
+import com.actionsoft.bpms.bpmn.engine.core.delegate.ProcessExecutionContext;
+import com.actionsoft.bpms.bpmn.engine.listener.InterruptListener;
+import com.actionsoft.bpms.bpmn.engine.listener.InterruptListenerInterface;
+import com.actionsoft.bpms.bpmn.engine.model.run.delegate.ProcessInstance;
+import com.actionsoft.bpms.util.DBSql;
+import com.actionsoft.exception.BPMNError;
+import com.actionsoft.sdk.local.SDK;
+import com.actionsoft.sdk.local.api.BOAPI;
+import com.dbzy.zjxs.po.LccpzcbaPO;
+import com.dbzy.zjxs.po.LccpzdbaPO;
+
+
+public class Lccpzcba extends InterruptListener implements InterruptListenerInterface{
+	
+	public Lccpzcba() {
+		// 表单校验
+	}
+	@Override
+	public boolean execute(ProcessExecutionContext ctx) throws Exception {
+		ProcessInstance proIns = ctx.getProcessInstance();
+		String proInsId = proIns.getId();
+		BOAPI boapi = SDK.getBOAPI();
+		//BO boData = boapi.get("BO_DY_ZDZC_LCZC_S", proInsId);
+		List<BO> datas = boapi.query("BO_DY_ZDZC_LCZC_S").addQuery("BINDID = ", proInsId).list();
+		//List<LccpzcbaPO> lczcList = new ArrayList<LccpzcbaPO>();
+		if(datas != null && !datas.isEmpty()) {
+			for(BO data : datas) {
+				
+				String badj = data.getString("BADJ");
+				String gsgdj = data.getString("GSGDJ");
+				double dbadj = Double.parseDouble(badj);
+				double dgsgdj = Double.parseDouble(gsgdj);
+				double dce = dbadj - dgsgdj;
+				data.set("CE", dce+"");
+		        SDK.getBOAPI().update("BO_DY_ZDZC_LCZC_S", data);	
+			}
+		}
+			
+		
+		
+		/*
+		for(BO data : datas) {
+			LccpzcbaPO lp = new LccpzcbaPO();
+			String badj = data.getString("BADJ");
+			String gsgdj = data.getString("GSGDJ");
+			String ce = data.getString("CE");
+			lp.setBadj(badj);
+			lp.setGsgdj(gsgdj);
+			lp.setCe(ce);
+			lczcList.add(lp);
+			
+		}
+		for(LccpzcbaPO po : lczcList) {
+			if(po.getCe() == null || "".equals(po.getCe())) {
+				throw new BPMNError("ERR_LCZC","差额不能为空");
+			}
+		}
+		*/
+		return true;
+	}
+
+}
+
+
